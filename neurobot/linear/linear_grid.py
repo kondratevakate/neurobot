@@ -203,16 +203,16 @@ class GridCVLinear:
     """
 
     def __init__(self, X, y,
-                 problem_name = 'test_classification',
-                 classifiers = ['lr', 'rfc', 'svc', 'xgb'],
-                 n_splits = 5,
-                 n_repeats = 5,
-                 n_bootstrap_splits = 100,
-                 scoring = 'roc_auc',
-                 random_state = 42,
-                 n_jobs = -1,
+                 problem_name='test_classification',
+                 classifiers=['lr', 'rfc', 'svc', 'xgb'],
+                 n_splits=5,
+                 n_repeats=5,
+                 n_bootstrap_splits=100,
+                 scoring='roc_auc',
+                 random_state=42,
+                 n_jobs=-1,
                  # xgb = False,
-                 non_l_dim_r = False
+                 non_l_dim_r=False
                 ):
         if not classifiers:
             raise ValueError("Calassifiers list should not be empty")
@@ -419,7 +419,7 @@ class GridCVLinear:
         display(results.set_index("classifier"))
 
 
-    def print_results(self, model=None):
+    def print_results(self):
         """
         Plots results.
         """
@@ -502,14 +502,14 @@ class GridCVLinear:
                     # self.grid[k].best_estimator_, self.X,
                     self.grid[key].best_estimator_, self.X,
                     self.y, n_splits=n_splits,
-                    method='.632', random_seed=42
+                    method='.632', random_seed=self.random_state
                 )
             else:
                 scores = bootstrap_point632_score(
                 # self.grid[k].best_estimator_, self.X.values,
                 self.grid[key].best_estimator_, self.X.values,
                 self.y.values, n_splits=n_splits,
-                method='.632', random_seed=42
+                method='.632', random_seed=self.random_state
             )
 
 
@@ -578,7 +578,7 @@ class GridCVLinear:
             fig.savefig(fig_name + '.png')
 
 
-    def save_val_results(self, problem_name = '', path=''):
+    def save_val_results(self, problem_name='', path=''):
         """Saves validation results.
 
         Parameters
@@ -639,6 +639,14 @@ class GridCVLinear:
 
         Parameters
         ----------
+        save : bool, default=True
+            Should the results be saved.
+        val : bool, default=True
+
+        plot : bool, default=True
+
+        save_fig : bool, default=True
+
         problem_name : str
             Dataset name and problem type
         path : str
