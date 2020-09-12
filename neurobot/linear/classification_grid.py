@@ -70,8 +70,8 @@ def get_svc_grid(cv, dim_reduction_methods, scoring, random_state=None, n_jobs=1
     )
 
 
-def get_lr_grid(cv, dim_reduction_methods, scoring, random_state = None, n_jobs = 1,
-                 lr_c_l = None, lr_penalty_l = None):
+def get_lr_grid(cv, dim_reduction_methods, scoring, random_state=None, n_jobs=1,
+                 lr_c_l=None, lr_penalty_l=None):
     """
     Created GridSearchCV model with LogisticRegression estimator.
 
@@ -103,7 +103,7 @@ def get_lr_grid(cv, dim_reduction_methods, scoring, random_state = None, n_jobs 
                                    sampling_strategy='minority')),
             ('dim_reduction', SelectKBest(stats.ttest_ind)),
             ('classifier', LogisticRegression(solver='liblinear',
-                                              random_state = random_state)),
+                                              random_state=random_state)),
         ]
     )
 
@@ -114,8 +114,8 @@ def get_lr_grid(cv, dim_reduction_methods, scoring, random_state = None, n_jobs 
         param_grid['classifier__penalty'] = lr_penalty_l
 
     return GridSearchCV(
-        estimator = pipe, param_grid = param_grid,
-        scoring = scoring, cv = cv, n_jobs = n_jobs
+        estimator=pipe, param_grid=param_grid,
+        scoring=scoring, cv=cv, n_jobs=n_jobs
     )
 
 
