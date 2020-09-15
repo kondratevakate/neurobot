@@ -8,21 +8,21 @@ from sklearn.base import BaseEstimator, MetaEstimatorMixin, clone
 
 from sklearn.utils.metaestimators import if_delegate_has_method
 
-from sklearn.feature_selection._base import SelectorMixin 
+from sklearn.feature_selection._base import SelectorMixin
 from sklearn.feature_selection.from_model import _get_feature_importances
 
 class SelectNFeaturesFromModel(BaseEstimator, SelectorMixin, MetaEstimatorMixin):
     """Feature selector that takes defined number of features for the dataset.
      OriThis feature selection algorithm looks only at the features (X), not the
     desired outputs (y), and can thus be used for unsupervised learning.
-  
+
     Parameters
     ----------
     threshold : float, optional
         Features with a training-set variance lower than this threshold will
         be removed. The default is to keep all features with non-zero variance,
         i.e. remove the features that have the same value in all samples.
-  
+
     Examples
     --------
         >>> X = [[0, 2, 0, 3], [0, 1, 4, 3], [0, 1, 1, 3]]
@@ -58,7 +58,7 @@ class SelectNFeaturesFromModel(BaseEstimator, SelectorMixin, MetaEstimatorMixin)
         self.estimator_ = clone(self.estimator)
         self.estimator_.fit(X, y, **fit_params)
         return self
-    
+
     @property
     def scores_(self):
         scores = _get_feature_importances(self.estimator_,)
@@ -68,7 +68,7 @@ class SelectNFeaturesFromModel(BaseEstimator, SelectorMixin, MetaEstimatorMixin)
     def threshold_(self):
         scores = _get_feature_importances(self.estimator_,)
         return np.sort(scores)[-n_selected]
-    
+
     @if_delegate_has_method('estimator')
     def partial_fit(self, X, y=None, **fit_params):
         if self.prefit:
