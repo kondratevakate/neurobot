@@ -6,8 +6,8 @@ Plug-and-play pipeline for classification models with adaptive `grid-search`, `d
 Model validation includes `repeated cross-validation`, `loo validation`, and `bootstrapping` to ensure model stability.
 
 
-#### Go to `/tutorials/classification_linear_grid_tutorial` for more details.
+#### Go to [`/tutorials/classification_linear_grid_tutorial`](https://github.com/kondratevakate/neurobot/blob/master/tutorials/classification_linear_grid_tutorial.ipynb) for more details.
 
 
 
-![img](https://github.com/adasegroup/adasegroup.github.io/blob/master/assets/img/neuro/mri_sketch_1.png)
+Pictured morprometry study in brain MR imaging. ![img](https://github.com/adasegroup/adasegroup.github.io/blob/master/assets/img/neuro/mri_sketch_1.png)
