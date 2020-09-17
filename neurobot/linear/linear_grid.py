@@ -50,98 +50,6 @@ logging.basicConfig(filename= 'D:\YandexDisk\kondratevakate\01_skoltech\Brain\sb
 logger = logging.getLogger()
 logger.info('The LINEAR started.')
 
-#
-# def print_results_(clf_grid_dict, save_plot_to=None, problem_name=None):
-#     """
-#     Shows result of algorithms.
-#
-#     Parameters
-#     -------
-#     clf_grid_dict :
-#         Dictionary of classifiers.
-#     save_plot_to : str, default=None
-#         The path to the plot file if it should be saved.
-#     problem_name : str, optional
-#         Classificator name for saving model.
-#     """
-#
-#     results = {
-#             "classifier" : [],
-#             "best parameters" : [],
-#             "best dim. reduction method" : [],
-#             "mean" : [],
-#             "std" : []
-#            }
-#
-#     for clf, grid in clf_grid_dict.items():
-#         results["classifier"].append(clf)
-#         results["best parameters"].append(
-#             ", ".join(
-#                 [param + " = " + str(best_value) for param, best_value in grid.best_params_.items() if param != 'dim_reduction']
-#             )
-#         )
-#         results["best dim. reduction method"].append(grid.best_params_['dim_reduction'])
-#         idx = grid.best_index_
-#         results["mean"].append(grid.cv_results_['mean_test_score'][idx])
-#         results["std"].append(grid.cv_results_['std_test_score'][idx])
-#
-#     results = pd.DataFrame(
-#         results, columns=["classifier", "best parameters", "best dim. reduction method", "mean", "std"]
-#     )
-#
-#     plt.figure(figsize=[8,len(clf_grid_dict)*3])
-#     display(results.set_index("classifier"))
-#
-#     today = date.today().strftime("%d%m%Y")
-#
-#     # draw graph
-#     fig = plt.figure()
-#     for i in results.index:
-#         plt.bar(i, results.loc[i, "mean"], yerr=results.loc[i, "std"], label=results.loc[i, "classifier"])
-#
-#     plt.xticks(range(results.shape[0]), results.loc[:, "classifier"])
-#     plt.axis(ymin=0.0, ymax=1.0)
-#     if save_plot_to is not None:
-#         fig.savefig('{}{}_{}_clf.png'.format(save_plot_to,
-#                                               today,
-#                                               problem_name
-#                                              ), bbox_inches='tight')
-#
-#     cnt = 0
-#     fig, axs = plt.subplots(len(results["classifier"]), figsize=(8,len(clf_grid_dict)*4))
-#     for clf in results["classifier"]:
-#         graph_mean = []
-#         graph_std = []
-#         j = 0
-#         for n in range(25):
-#             graph_mean.append(clf_grid_dict[clf].cv_results_['split{}_test_score'.format(n)].mean())
-#             graph_std.append(clf_grid_dict[clf].cv_results_['split{}_test_score'.format(n)].std())
-#         try:
-#             ax = axs[cnt]
-#         except TypeError:
-#             ax = axs
-#         for i in range(5):
-#             ax.bar(range(j, j+5), [graph_mean[m] for m in range(j, j+5)], yerr=[graph_std[m] for m in range(j, j+5)])
-#             j += 5
-#         ax.set_xticks(np.linspace(2,22,5))
-#         ax.set_xticklabels(range(1,6))
-#         ax.set_title(results["classifier"][cnt].upper())
-#         try:
-#             for ax in axs.flat:
-#                 ax.set(xlabel='5 folds with 5 iterations for each', ylabel='Mean score for each iteration')
-#         except AttributeError:
-#             ax.set(xlabel='5 folds with 5 iterations for each', ylabel='Mean score for each iteration')
-#         cnt += 1
-#     if save_plot_to is not None:
-#         fig.savefig('{}{}_{}_folds.png'.format(save_plot_to, today, problem_name), bbox_inches='tight')
-#     plt.show()
-#
-#     print("Best model: ")
-#     clf = results.loc[results["mean"].argmax(), "classifier"]
-#     print(clf)
-#     print("\n".join([param + " = " + str(best_value) for param, best_value in clf_grid_dict[clf].best_params_.items()]))
-
-
 class GridCVLinear:
     """
     A class used to search among several classifiers with different assesement.
@@ -217,8 +125,8 @@ class GridCVLinear:
                  scoring='roc_auc',
                  random_state=42,
                  n_jobs=-1,
-                 # xgb = False,
-                 non_l_dim_r=False
+                 non_l_dim_r=False,
+                 pca_level=0.95
                 ):
         if not classifiers:
             raise ValueError("Calassifiers list should not be empty")
@@ -238,10 +146,9 @@ class GridCVLinear:
         self.save_plot_to = None
         self.path = ''
         self.n_objects = self.X.shape[0]
-        # self.classifiers = ['best', 'svc', "lr", "rfc"]
         self.classifiers = classifiers
-        # self.xgb = xgb
         self.non_l_dim_r = non_l_dim_r
+        self.pca_level = pca_level
         self.grid = {}
         self.loo_results = []
         self.bootstrap_results = []
@@ -262,7 +169,7 @@ class GridCVLinear:
             dim_reduction_methods += [SelectNFeaturesFromModel(
                 LogisticRegression(random_state = self.random_state), n
             ) for n in n_features]
-            dim_reduction_methods += [PCA(0.95, random_state = self.random_state)]
+            dim_reduction_methods += [PCA(self.pca_level, random_state = self.random_state)]
             if self.non_l_dim_r:
                 n_components = [2, self.X.shape[0]*0.1]
                 dim_reduction_methods += [Isomap(n_n, n_c, n_jobs=self.n_jobs,
@@ -377,44 +284,6 @@ class GridCVLinear:
         # Finds the best model to show it in the results
         best_model = max(self.grid.values(), key=lambda x: x.best_score_).best_estimator_
         return list(self.grid.values()) + [best_model]
-
-    # def print_results_(self, save_plot_to=None):
-    #     """
-    #     Provides results of algorithm and saves if it is necessary.
-    #
-    #     Parameters
-    #     -------
-    #     save_plot_to : str, default=None
-    #         Path to the target file.
-    #     """
-    #
-    #     clf_grid_dict = dict(zip(self.classifiers, self.grid))
-    #
-    #     results = {
-    #             "classifier" : [],
-    #             "best parameters" : [],
-    #             "best dim. reduction method" : [],
-    #             "mean" : [],
-    #             "std" : []
-    #            }
-    #
-    #     for clf, grid in clf_grid_dict.items():
-    #         results["classifier"].append(clf)
-    #         results["best parameters"].append(
-    #             ", ".join(
-    #                 [param + " = " + str(best_value) for param, best_value in grid.best_params_.items() if param != 'dim_reduction']
-    #             )
-    #         )
-    #         results["best dim. reduction method"].append(grid.best_params_['dim_reduction'])
-    #         idx = grid.best_index_
-    #         results["mean"].append(grid.cv_results_['mean_test_score'][idx])
-    #         results["std"].append(grid.cv_results_['std_test_score'][idx])
-    #
-    #     results = pd.DataFrame(
-    #         results, columns=["classifier", "best parameters", "best dim. reduction method", "mean", "std"]
-    #     )
-    #     display(results.set_index("classifier"))
-
 
     def print_results(self, save_plot_to=None):
         """
