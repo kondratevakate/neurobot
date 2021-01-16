@@ -10,4 +10,4 @@ Model validation includes `repeated cross-validation`, `loo validation`, and `bo
 
 
 
-Pictured morprometry study in brain MR imaging. ![img](https://github.com/adasegroup/adasegroup.github.io/blob/master/assets/img/neuro/mri_sketch_1.png)
+Pictured morphometry study in brain MR imaging. ![img](https://github.com/adasegroup/adasegroup.github.io/blob/master/assets/img/neuro/mri_sketch_1.png)
